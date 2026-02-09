@@ -10,17 +10,22 @@ pipeline {
   }
   stages {
     stage('Checkout') { steps { checkout scm } }
-    stage('Build') {
+    stage('Install') {
       steps {
         script {
           if (fileExists('package-lock.json')) {
             sh 'npm ci'
           } else {
-            sh 'rm -rf node_modules package-lock.json'
             sh 'npm install'
           }
         }
-        sh 'npm test'
+        // Ensure supertest is present
+        script {
+          def supertestExists = sh(script: "npm ls supertest || true", returnStatus: true) == 0
+          if (!supertestExists) {
+            sh 'npm install --save-dev supertest'
+          }
+        }
       }
     }
     stage('Lint') {
@@ -30,7 +35,6 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh 'npm install --save-dev supertest'
         sh 'npm test -- --coverage'
       }
     }
