@@ -19,23 +19,28 @@ app.use(notFoundHandler);
 // Error handler
 app.use(errorHandler);
 
-const startServer = async () => {
-  try {
-    await db.sequelize.authenticate();
-    console.log('✓ Database connected');
-
-    if (config.app.nodeEnv === 'development') {
-      await db.sequelize.sync({ alter: true });
-    }
-
-    app.listen(config.app.port, () => {
-      console.log(`\nAppointment Service running on port ${config.app.port}`);
-    });
-  } catch (error) {
-    console.error('Failed to start:', error);
-    process.exit(1);
-  }
-};
-
-startServer();
+// Export app for testing
 module.exports = app;
+
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  const startServer = async () => {
+    try {
+      await db.sequelize.authenticate();
+      console.log('✓ Database connected');
+
+      if (config.app.nodeEnv === 'development') {
+        await db.sequelize.sync({ alter: true });
+      }
+
+      app.listen(config.app.port, () => {
+        console.log(`\nAppointment Service running on port ${config.app.port}`);
+      });
+    } catch (error) {
+      console.error('Failed to start:', error);
+      process.exit(1);
+    }
+  };
+
+  startServer();
+}
