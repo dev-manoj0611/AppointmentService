@@ -69,7 +69,7 @@ pipeline {
     stage('Push to ECR Snapshot') {
       steps {
         script {
-          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-ecr-jenkins']]) {
+          withCredentials([aws(credentialsId: 'aws-ecr-jenkins')]) {
             sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 147997138755.dkr.ecr.us-east-1.amazonaws.com"
             sh "docker push ${ECR_SNAPSHOT}:${env.BUILD_NUMBER}"
           }
