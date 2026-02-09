@@ -29,6 +29,7 @@ pipeline {
     }
     stage('Test') {
       steps {
+        sh 'npm install --save-dev supertest'
         sh 'npm test -- --coverage'
       }
     }
