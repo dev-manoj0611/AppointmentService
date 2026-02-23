@@ -1,6 +1,7 @@
 const express = require('express');
 const config = require('./config/env');
 const db = require('./models');
+const appointmentRoutes = require('./routes/appointmentRoutes');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json({ limit: config.server?.bodyLimit || '10mb' }));
 app.get(`${config.api.prefix}/health`, (req, res) => {
   res.json({ status: 'success', service: 'appointment-service' });
 });
+app.use(config.api.prefix, appointmentRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
